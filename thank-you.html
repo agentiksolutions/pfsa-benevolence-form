@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Received | The PFSA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pfsa-blue: #1B3A5C;
+      --pfsa-teal: #1A5276;
+      --pfsa-green: #2E6B3A;
+      --pfsa-gold: #B8860B;
+      --pfsa-light: #F8FAFB;
+      --font-heading: 'Cormorant Garamond', serif;
+      --font-body: 'Source Sans 3', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--pfsa-light);
+      color: #333;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--pfsa-blue), var(--pfsa-teal));
+      color: white;
+      text-align: center;
+      padding: 3rem 1.5rem 2.5rem;
+    }
+    .header h1 {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .header .org-name {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 1rem;
+    }
+
+    .content {
+      flex: 1;
+      max-width: 650px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 4rem;
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--pfsa-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+    .success-icon svg {
+      width: 40px;
+      height: 40px;
+      stroke: white;
+      stroke-width: 3;
+      fill: none;
+    }
+
+    .content h2 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--pfsa-blue);
+      margin-bottom: 1rem;
+    }
+
+    .content p {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 1rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .timeline-box {
+      background: white;
+      border-left: 4px solid var(--pfsa-gold);
+      border-radius: 0 8px 8px 0;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      text-align: left;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .timeline-box h3 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      color: var(--pfsa-blue);
+      margin-bottom: 0.75rem;
+    }
+    .timeline-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 0.65rem;
+      font-size: 0.95rem;
+      color: #555;
+    }
+    .timeline-item:last-child { margin-bottom: 0; }
+    .timeline-dot {
+      min-width: 8px;
+      height: 8px;
+      background: var(--pfsa-gold);
+      border-radius: 50%;
+      margin-top: 0.5rem;
+      margin-right: 0.75rem;
+    }
+
+    .contact-box {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .contact-box p {
+      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+    }
+    .contact-box a {
+      color: var(--pfsa-gold);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .contact-box a:hover { text-decoration: underline; }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--pfsa-blue);
+      text-decoration: none;
+      border-bottom: 2px solid var(--pfsa-gold);
+      padding-bottom: 2px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--pfsa-gold); }
+
+    .footer {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      color: #999;
+      font-size: 0.8rem;
+    }
+    .footer a { color: var(--pfsa-gold); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .header h1 { font-size: 1.8rem; }
+      .header { padding: 2rem 1.25rem 1.75rem; }
+      .content { padding: 2rem 1rem 3rem; }
+      .content h2 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="org-name">The Public Foundation for Stewardship Advancement</div>
+    <h1>Benevolence Application</h1>
+  </header>
+
+  <div class="content">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+
+    <h2>Application Received</h2>
+    <p>Thank you for submitting your benevolence application. Our team has received your information and will begin the review process.</p>
+    <p>You will receive a confirmation email at the address you provided.</p>
+
+    <div class="timeline-box">
+      <h3>What Happens Next</h3>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div><strong>Within 2 business days:</strong> We'll confirm receipt and check your application for completeness. If anything is missing, we'll reach out.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div><strong>Within 5 business days:</strong> Our review team evaluates your application and supporting documents.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div><strong>Within 7 business days:</strong> The Benevolence Committee makes a decision and you'll be notified of the outcome.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div><strong>If approved:</strong> Funds are disbursed directly to your vendor/provider within 2 business days of approval.</div>
+      </div>
+    </div>
+
+    <div class="contact-box">
+      <p><strong>Questions about your application?</strong></p>
+      <p>Call <a href="tel:8593143051">(859) 314-3051</a> or email <a href="mailto:info@thepfsa.org">info@thepfsa.org</a></p>
+    </div>
+
+    <a href="https://www.thepfsa.org" class="back-link">Visit www.thepfsa.org</a>
+  </div>
+
+  <footer class="footer">
+    <p>The Public Foundation for Stewardship Advancement, Inc.</p>
+    <p><a href="https://www.thepfsa.org">www.thepfsa.org</a> &nbsp;|&nbsp; (859) 314-3051 &nbsp;|&nbsp; info@thepfsa.org</p>
+    <p style="margin-top: 0.5rem;">501(c)(3) Nonprofit Organization &nbsp;&middot;&nbsp; EIN 20-3856434</p>
+  </footer>
+
+</body>
+</html>

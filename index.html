@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benevolence Application | The PFSA</title>
+  <meta name="description" content="Apply for benevolence assistance from The Public Foundation for Stewardship Advancement.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pfsa-blue: #1B3A5C;
+      --pfsa-teal: #1A5276;
+      --pfsa-green: #2E6B3A;
+      --pfsa-gold: #B8860B;
+      --pfsa-light: #F8FAFB;
+      --pfsa-warm: #FEFEFE;
+      --pfsa-red: #9B1C1C;
+      --font-heading: 'Cormorant Garamond', serif;
+      --font-body: 'Source Sans 3', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--pfsa-light);
+      color: #333;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--pfsa-blue), var(--pfsa-teal));
+      color: white;
+      text-align: center;
+      padding: 3rem 1.5rem 2.5rem;
+    }
+    .header h1 {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .header p {
+      font-size: 1.05rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+      font-weight: 300;
+    }
+    .header .org-name {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 1rem;
+    }
+
+    /* Container */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* Info Banner */
+    .info-banner {
+      background: white;
+      border-left: 4px solid var(--pfsa-gold);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      border-radius: 0 8px 8px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .info-banner p {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 0.4rem;
+    }
+    .info-banner p:last-child { margin-bottom: 0; }
+    .info-banner strong { color: var(--pfsa-blue); }
+    .info-banner a { color: var(--pfsa-gold); text-decoration: none; font-weight: 600; }
+    .info-banner a:hover { text-decoration: underline; }
+
+    /* Form Sections */
+    .form-section {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .form-section h2 {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--pfsa-blue);
+      margin-bottom: 0.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--pfsa-light);
+    }
+    .form-section h2 span {
+      font-size: 0.85rem;
+      font-family: var(--font-body);
+      font-weight: 400;
+      color: #888;
+      display: block;
+      margin-top: 0.25rem;
+    }
+
+    /* Form Elements */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+    .form-row.three-col {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .form-row.full {
+      grid-template-columns: 1fr;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--pfsa-blue);
+      margin-bottom: 0.35rem;
+      letter-spacing: 0.02em;
+    }
+    label .required {
+      color: var(--pfsa-red);
+      margin-left: 2px;
+    }
+    label .optional {
+      color: #999;
+      font-weight: 400;
+      font-size: 0.8rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="number"],
+    input[type="file"],
+    select,
+    textarea {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      padding: 0.65rem 0.85rem;
+      border: 1.5px solid #D1D5DB;
+      border-radius: 8px;
+      background: var(--pfsa-warm);
+      color: #333;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--pfsa-gold);
+      box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.12);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    input[type="file"] {
+      padding: 0.5rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    input[type="file"]::file-selector-button {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.4rem 0.8rem;
+      border: 1.5px solid var(--pfsa-blue);
+      border-radius: 6px;
+      background: var(--pfsa-light);
+      color: var(--pfsa-blue);
+      cursor: pointer;
+      margin-right: 0.75rem;
+      transition: background 0.2s;
+    }
+    input[type="file"]::file-selector-button:hover {
+      background: var(--pfsa-blue);
+      color: white;
+    }
+
+    /* Checkbox Group */
+    .checkbox-group {
+      margin-top: 1rem;
+    }
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      font-weight: 400;
+      color: #333;
+      font-size: 0.95rem;
+      padding: 0.4rem 0;
+      cursor: pointer;
+    }
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 0.6rem;
+      accent-color: var(--pfsa-blue);
+      cursor: pointer;
+    }
+
+    /* Radio Group */
+    .radio-group label {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 400;
+      color: #333;
+      font-size: 0.95rem;
+      margin-right: 1.5rem;
+      cursor: pointer;
+    }
+    .radio-group input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 0.4rem;
+      accent-color: var(--pfsa-blue);
+      cursor: pointer;
+    }
+
+    /* Household Table */
+    .household-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    .household-table th {
+      background: var(--pfsa-blue);
+      color: white;
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 0.6rem 0.5rem;
+      text-align: left;
+      letter-spacing: 0.03em;
+    }
+    .household-table th:first-child { border-radius: 6px 0 0 0; }
+    .household-table th:last-child { border-radius: 0 6px 0 0; }
+    .household-table td {
+      padding: 0.25rem;
+      border-bottom: 1px solid #E5E7EB;
+    }
+    .household-table input, .household-table select {
+      border-radius: 4px;
+      font-size: 0.85rem;
+      padding: 0.45rem 0.5rem;
+    }
+    .add-row-btn {
+      margin-top: 0.75rem;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--pfsa-blue);
+      background: none;
+      border: 1.5px dashed var(--pfsa-blue);
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .add-row-btn:hover {
+      background: var(--pfsa-light);
+    }
+
+    /* Expenses Grid */
+    .expenses-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    /* Declarations */
+    .declaration-text {
+      background: var(--pfsa-light);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.7;
+      border: 1px solid #E5E7EB;
+    }
+    .declaration-text li {
+      margin-bottom: 0.75rem;
+      list-style: none;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+    .declaration-text li::before {
+      content: "\2713";
+      position: absolute;
+      left: 0;
+      color: var(--pfsa-green);
+      font-weight: 700;
+    }
+
+    /* Signature */
+    .signature-input {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--pfsa-blue);
+      border-bottom: 2px solid var(--pfsa-blue);
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      border-radius: 0;
+      background: transparent;
+      padding: 0.5rem 0.25rem;
+    }
+    .signature-input:focus {
+      box-shadow: none;
+      border-bottom-color: var(--pfsa-gold);
+    }
+
+    /* Submit */
+    .submit-btn {
+      display: block;
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, var(--pfsa-gold), #D4A017);
+      border: none;
+      border-radius: 10px;
+      padding: 1rem;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      box-shadow: 0 4px 15px rgba(184, 134, 11, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 1.5rem;
+    }
+    .submit-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 25px rgba(184, 134, 11, 0.45);
+    }
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      color: #999;
+      font-size: 0.8rem;
+    }
+    .footer a { color: var(--pfsa-gold); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .header h1 { font-size: 1.8rem; }
+      .header { padding: 2rem 1.25rem 1.75rem; }
+      .container { padding: 1.25rem 1rem 3rem; }
+      .form-section { padding: 1.25rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-row.three-col { grid-template-columns: 1fr; }
+      .expenses-grid { grid-template-columns: 1fr; }
+      .household-table { font-size: 0.8rem; }
+      .household-table th { font-size: 0.7rem; padding: 0.4rem 0.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="org-name">The Public Foundation for Stewardship Advancement</div>
+    <h1>Benevolence Application</h1>
+    <p>See a Need, Meet a Need</p>
+  </header>
+
+  <div class="container">
+
+    <div class="info-banner">
+      <p><strong>Please complete all required fields.</strong> Incomplete applications will delay review.</p>
+      <p>Attach the requested supporting documents (ID, bills, pay stubs, etc.).</p>
+      <p>Need help completing this form? Call <a href="tel:8593143051">(859) 314-3051</a>.</p>
+    </div>
+
+    <form action="https://formsubmit.co/info@thepfsa.org" method="POST" enctype="multipart/form-data">
+      <!-- FormSubmit config -->
+      <input type="hidden" name="_subject" id="emailSubject" value="New Benevolence Application Received">
+      <input type="hidden" name="_next" value="https://apply.thepfsa.org/thank-you.html">
+      <input type="hidden" name="_captcha" value="true">
+      <input type="hidden" name="_template" value="table">
+      <input type="text" name="_honey" style="display:none">
+
+      <!-- SECTION A -->
+      <div class="form-section">
+        <h2>Section A <span>Applicant & Household Information</span></h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date of Application <span class="required">*</span></label>
+            <input type="date" name="application_date" required>
+          </div>
+          <div class="form-group">
+            <label>Date of Birth <span class="required">*</span></label>
+            <input type="date" name="date_of_birth" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label>Full Legal Name <span class="required">*</span></label>
+            <input type="text" name="full_name" placeholder="First and Last Name" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Preferred Name / Nickname <span class="optional">(optional)</span></label>
+            <input type="text" name="preferred_name" placeholder="What do you go by?">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Primary Phone <span class="required">*</span></label>
+            <input type="tel" name="primary_phone" placeholder="(859) 555-1234" required>
+          </div>
+          <div class="form-group">
+            <label>Secondary Phone <span class="optional">(optional)</span></label>
+            <input type="tel" name="secondary_phone" placeholder="(859) 555-5678">
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Email <span class="required">*</span></label>
+            <input type="email" name="email" placeholder="your@email.com" required>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Street Address <span class="required">*</span></label>
+            <input type="text" name="address" placeholder="123 Main St, Apt 4" required>
+          </div>
+        </div>
+
+        <div class="form-row three-col">
+          <div class="form-group">
+            <label>City <span class="required">*</span></label>
+            <input type="text" name="city" placeholder="Lexington" required>
+          </div>
+          <div class="form-group">
+            <label>State <span class="required">*</span></label>
+            <input type="text" name="state" placeholder="KY" required>
+          </div>
+          <div class="form-group">
+            <label>ZIP <span class="required">*</span></label>
+            <input type="text" name="zip" placeholder="40502" required>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>How long have you lived in this community?</label>
+            <input type="text" name="community_duration" placeholder="e.g., 3 years">
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <label>Household Members</label>
+          <table class="household-table" id="householdTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Relation</th>
+                <th>Age</th>
+                <th>Employment Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="text" name="hh_name_1" placeholder="Name"></td>
+                <td><input type="text" name="hh_relation_1" placeholder="Spouse, Child, etc."></td>
+                <td><input type="number" name="hh_age_1" placeholder="Age" style="width:60px"></td>
+                <td>
+                  <select name="hh_employment_1">
+                    <option value="">Select</option>
+                    <option value="Employed">Employed</option>
+                    <option value="Unemployed">Unemployed</option>
+                    <option value="Student">Student</option>
+                    <option value="Retired">Retired</option>
+                    <option value="Disabled">Disabled</option>
+                    <option value="Minor">Minor</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="text" name="hh_name_2" placeholder="Name"></td>
+                <td><input type="text" name="hh_relation_2" placeholder="Relation"></td>
+                <td><input type="number" name="hh_age_2" placeholder="Age" style="width:60px"></td>
+                <td>
+                  <select name="hh_employment_2">
+                    <option value="">Select</option>
+                    <option value="Employed">Employed</option>
+                    <option value="Unemployed">Unemployed</option>
+                    <option value="Student">Student</option>
+                    <option value="Retired">Retired</option>
+                    <option value="Disabled">Disabled</option>
+                    <option value="Minor">Minor</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="text" name="hh_name_3" placeholder="Name"></td>
+                <td><input type="text" name="hh_relation_3" placeholder="Relation"></td>
+                <td><input type="number" name="hh_age_3" placeholder="Age" style="width:60px"></td>
+                <td>
+                  <select name="hh_employment_3">
+                    <option value="">Select</option>
+                    <option value="Employed">Employed</option>
+                    <option value="Unemployed">Unemployed</option>
+                    <option value="Student">Student</option>
+                    <option value="Retired">Retired</option>
+                    <option value="Disabled">Disabled</option>
+                    <option value="Minor">Minor</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" class="add-row-btn" onclick="addHouseholdRow()">+ Add Household Member</button>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <label>Do you receive services from any local nonprofits or government programs? <span class="required">*</span></label>
+          <div class="radio-group" style="margin-top: 0.5rem;">
+            <label><input type="radio" name="receives_services" value="Yes" required> Yes</label>
+            <label><input type="radio" name="receives_services" value="No"> No</label>
+          </div>
+          <div style="margin-top: 0.5rem;">
+            <input type="text" name="services_list" placeholder="If yes, please list the programs or agencies">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION B -->
+      <div class="form-section">
+        <h2>Section B <span>Income & Financial Snapshot</span></h2>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Current Employer <span class="required">*</span> <span class="optional">(or last employer if unemployed)</span></label>
+            <input type="text" name="employer" placeholder="Company name" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Employer Phone</label>
+            <input type="tel" name="employer_phone" placeholder="(555) 555-1234">
+          </div>
+          <div class="form-group">
+            <label>Employer Address</label>
+            <input type="text" name="employer_address" placeholder="City, State">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Monthly Gross Income <span class="required">*</span></label>
+            <input type="number" name="monthly_gross_income" placeholder="$0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Monthly Net Income <span class="required">*</span></label>
+            <input type="number" name="monthly_net_income" placeholder="$0.00" step="0.01" required>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <label>Other Household Income <span class="optional">(source & monthly amount)</span></label>
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" name="other_income_source_1" placeholder="Source (e.g., SSI, child support)">
+            </div>
+            <div class="form-group">
+              <input type="number" name="other_income_amount_1" placeholder="$0.00" step="0.01">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" name="other_income_source_2" placeholder="Source">
+            </div>
+            <div class="form-group">
+              <input type="number" name="other_income_amount_2" placeholder="$0.00" step="0.01">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Total Monthly Household Income <span class="required">*</span></label>
+            <input type="number" name="total_monthly_income" placeholder="$0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Liquid Savings / Cash on Hand <span class="optional">(approx)</span></label>
+            <input type="number" name="liquid_savings" placeholder="$0.00" step="0.01">
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Assets <span class="optional">(vehicles, property, investments &mdash; list briefly)</span></label>
+            <textarea name="assets" rows="2" placeholder="e.g., 2015 Honda Civic, no property"></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <label>Monthly Household Expenses <span class="optional">(approx)</span></label>
+          <div class="expenses-grid">
+            <div class="form-group">
+              <label style="font-weight:400; font-size:0.85rem;">Rent / Mortgage</label>
+              <input type="number" name="expense_rent" placeholder="$0.00" step="0.01">
+            </div>
+            <div class="form-group">
+              <label style="font-weight:400; font-size:0.85rem;">Utilities (combined)</label>
+              <input type="number" name="expense_utilities" placeholder="$0.00" step="0.01">
+            </div>
+            <div class="form-group">
+              <label style="font-weight:400; font-size:0.85rem;">Food / Groceries</label>
+              <input type="number" name="expense_food" placeholder="$0.00" step="0.01">
+            </div>
+            <div class="form-group">
+              <label style="font-weight:400; font-size:0.85rem;">Transportation</label>
+              <input type="number" name="expense_transportation" placeholder="$0.00" step="0.01">
+            </div>
+            <div class="form-group">
+              <label style="font-weight:400; font-size:0.85rem;">Insurance (health/auto/home)</label>
+              <input type="number" name="expense_insurance" placeholder="$0.00" step="0.01">
+            </div>
+            <div class="form-group">
+              <label style="font-weight:400; font-size:0.85rem;">Childcare / Schooling</label>
+              <input type="number" name="expense_childcare" placeholder="$0.00" step="0.01">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label style="font-weight:400; font-size:0.85rem;">Other Debts / Obligations</label>
+              <input type="number" name="expense_other" placeholder="$0.00" step="0.01">
+            </div>
+          </div>
+          <div style="margin-top: 0.75rem; padding: 0.75rem 1rem; background: var(--pfsa-light); border-radius: 8px; border: 1px solid #E5E7EB;">
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--pfsa-blue);">Total Monthly Expenses: </span>
+            <span id="expenseTotal" style="font-size: 1rem; font-weight: 700; color: var(--pfsa-blue);">$0.00</span>
+            <span style="font-size: 0.8rem; color: #999; margin-left: 0.5rem;" id="gapIndicator"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION C -->
+      <div class="form-section">
+        <h2>Section C <span>Request Details</span></h2>
+
+        <div style="margin-top: 0.75rem;">
+          <label>Type of Assistance Requested <span class="required">*</span></label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="assist_rent" value="Yes"> Rent / Mortgage Payment</label>
+            <label><input type="checkbox" name="assist_utilities" value="Yes"> Utilities (electric / gas / water)</label>
+            <label><input type="checkbox" name="assist_medical" value="Yes"> Medical / Prescription</label>
+            <label><input type="checkbox" name="assist_food" value="Yes"> Food / Basic Needs</label>
+            <label><input type="checkbox" name="assist_transportation" value="Yes"> Transportation</label>
+            <label><input type="checkbox" name="assist_home_repair" value="Yes"> Emergency Home Repair (safety-related)</label>
+            <label><input type="checkbox" name="assist_other" value="Yes"> Other</label>
+          </div>
+          <input type="text" name="assist_other_detail" placeholder="If other, please specify" style="margin-top: 0.5rem;">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Total Amount Requested <span class="required">*</span></label>
+            <input type="number" name="amount_requested" placeholder="$0.00" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Deadline / Date Funds Needed By <span class="required">*</span></label>
+            <input type="date" name="funds_deadline" required>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <label>Payee <span class="optional">(who should we pay if approved?)</span></label>
+          <div class="form-row three-col">
+            <div class="form-group">
+              <input type="text" name="payee_name" placeholder="Name / Company">
+            </div>
+            <div class="form-group">
+              <input type="tel" name="payee_phone" placeholder="Phone">
+            </div>
+            <div class="form-group">
+              <input type="text" name="payee_address" placeholder="Address">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row full" style="margin-top: 1.25rem;">
+          <div class="form-group">
+            <label>Explain the emergency or circumstances that caused this need <span class="required">*</span></label>
+            <textarea name="explanation" rows="5" placeholder="Please describe your situation and what led to this need for assistance..." required></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <label>Have you applied for other assistance for this need? <span class="required">*</span></label>
+          <div class="radio-group" style="margin-top: 0.5rem;">
+            <label><input type="radio" name="other_assistance" value="Yes" required> Yes</label>
+            <label><input type="radio" name="other_assistance" value="No"> No</label>
+          </div>
+          <div style="margin-top: 0.5rem;">
+            <input type="text" name="other_assistance_details" placeholder="If yes: where (agency/nonprofit), date applied, and outcome">
+          </div>
+        </div>
+
+        <div class="form-row full" style="margin-top: 1rem;">
+          <div class="form-group">
+            <label>If partially approved, what is your highest priority?</label>
+            <input type="text" name="highest_priority" placeholder="e.g., Rent first, then utilities">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION D -->
+      <div class="form-section">
+        <h2>Section D <span>Declarations, Agreement & Signature</span></h2>
+
+        <div class="declaration-text">
+          <ul>
+            <li>I certify that the information in this application is true and complete to the best of my knowledge. I authorize PFSA and its authorized representatives to verify any information provided, including contacting employers, landlords, and service providers. I understand that false statements or omission of material facts may result in denial.</li>
+            <li>I understand that PFSA requires direct payment to vendors (landlord, utility, medical provider) rather than cash reimbursement.</li>
+            <li>I also understand that PFSA may require follow-up documentation or receipts.</li>
+          </ul>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>E-Signature (type your full legal name) <span class="required">*</span></label>
+            <input type="text" name="signature" class="signature-input" placeholder="Your Full Legal Name" required>
+          </div>
+          <div class="form-group">
+            <label>Date <span class="required">*</span></label>
+            <input type="date" name="signature_date" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILE UPLOADS -->
+      <div class="form-section">
+        <h2>Supporting Documents <span>Upload required attachments</span></h2>
+
+        <div class="form-row full" style="margin-top: 0.75rem;">
+          <div class="form-group">
+            <label>Photo ID (driver's license or state ID) <span class="required">*</span></label>
+            <input type="file" name="photo_id" accept="image/*,.pdf" required>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Proof of Income (2 recent pay stubs or benefits statement) <span class="required">*</span></label>
+            <input type="file" name="proof_of_income" accept="image/*,.pdf" multiple required>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Most Recent Rent/Mortgage Statement or Utility/Medical Bill <span class="required">*</span></label>
+            <input type="file" name="bill_statement" accept="image/*,.pdf" multiple required>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Bank Statements (last 2 months) <span class="optional">(optional but helpful)</span></label>
+            <input type="file" name="bank_statements" accept="image/*,.pdf" multiple>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Other Supporting Documents <span class="optional">(bills, estimates, medical records, etc.)</span></label>
+            <input type="file" name="other_documents" accept="image/*,.pdf,.doc,.docx" multiple>
+          </div>
+        </div>
+
+        <div style="margin-top: 0.75rem; padding: 0.6rem 1rem; background: #FFF8E7; border-radius: 6px; border: 1px solid #F0DCA0; font-size: 0.82rem; color: #8B6914;">
+          Total uploads must be under 5MB. Use phone photos or compress PDFs if needed.
+          <span id="fileSizeIndicator" style="font-weight: 600; margin-left: 0.5rem;"></span>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <label>Accessibility / Special Assistance</label>
+          <div class="radio-group" style="margin-top: 0.5rem;">
+            <label><input type="radio" name="needs_accommodation" value="Yes"> Yes, I need assistance</label>
+            <label><input type="radio" name="needs_accommodation" value="No"> No</label>
+          </div>
+          <div style="margin-top: 0.5rem;">
+            <input type="text" name="accommodation_details" placeholder="If yes, please describe what assistance you need">
+          </div>
+        </div>
+      </div>
+
+      <!-- PRIVACY -->
+      <div class="form-section" style="background: var(--pfsa-light); border: 1px solid #E5E7EB;">
+        <p style="font-size: 0.82rem; color: #777; line-height: 1.7;">
+          PFSA treats all applicant information as confidential and stores it securely. Information will only be shared with staff, the Benevolence Committee, or authorized board members for the purpose of verification and decision-making. By submitting this application, you consent to this limited sharing. PFSA retains application records for audit and compliance in accordance with nonprofit recordkeeping best practices.
+        </p>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Application</button>
+    </form>
+  </div>
+
+  <footer class="footer">
+    <p>The Public Foundation for Stewardship Advancement, Inc.</p>
+    <p><a href="https://www.thepfsa.org">www.thepfsa.org</a> &nbsp;|&nbsp; (859) 314-3051 &nbsp;|&nbsp; info@thepfsa.org</p>
+    <p style="margin-top: 0.5rem;">501(c)(3) Nonprofit Organization &nbsp;&middot;&nbsp; EIN 20-3856434</p>
+  </footer>
+
+  <script>
+    /* ============================================================
+       PFSA BENEVOLENCE AUTO-ASSESSMENT ENGINE
+       Calculates preliminary scores based on board-approved
+       Scoring Rubric (35 pts total). Categories 5 & 6 require
+       human review and are NOT auto-scored.
+       ============================================================ */
+
+    let rowCount = 3;
+
+    function addHouseholdRow() {
+      rowCount++;
+      const tbody = document.querySelector('#householdTable tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" name="hh_name_${rowCount}" placeholder="Name"></td>
+        <td><input type="text" name="hh_relation_${rowCount}" placeholder="Relation"></td>
+        <td><input type="number" name="hh_age_${rowCount}" placeholder="Age" style="width:60px"></td>
+        <td>
+          <select name="hh_employment_${rowCount}">
+            <option value="">Select</option>
+            <option value="Employed">Employed</option>
+            <option value="Unemployed">Unemployed</option>
+            <option value="Student">Student</option>
+            <option value="Retired">Retired</option>
+            <option value="Disabled">Disabled</option>
+            <option value="Minor">Minor</option>
+          </select>
+        </td>`;
+      tbody.appendChild(tr);
+    }
+
+    // Auto-fill today's date
+    document.addEventListener('DOMContentLoaded', function() {
+      const today = new Date().toISOString().split('T')[0];
+      const appDate = document.querySelector('input[name="application_date"]');
+      const sigDate = document.querySelector('input[name="signature_date"]');
+      if (appDate && !appDate.value) appDate.value = today;
+      if (sigDate && !sigDate.value) sigDate.value = today;
+
+      // Live expense total calculator
+      const expenseFields = ['expense_rent', 'expense_utilities', 'expense_food',
+        'expense_transportation', 'expense_insurance', 'expense_childcare', 'expense_other'];
+      const totalDisplay = document.getElementById('expenseTotal');
+      const gapDisplay = document.getElementById('gapIndicator');
+
+      function updateExpenseTotal() {
+        let total = 0;
+        expenseFields.forEach(function(name) {
+          total += parseFloat(document.querySelector('[name="' + name + '"]').value) || 0;
+        });
+        totalDisplay.textContent = '$' + total.toFixed(2);
+
+        // Show gap vs income if income is filled
+        const income = parseFloat(document.querySelector('[name="total_monthly_income"]').value) ||
+                       parseFloat(document.querySelector('[name="monthly_net_income"]').value) || 0;
+        if (income > 0 && total > 0) {
+          const gap = income - total;
+          if (gap >= 0) {
+            gapDisplay.textContent = '(surplus: $' + gap.toFixed(2) + '/mo)';
+            gapDisplay.style.color = '#2E6B3A';
+          } else {
+            gapDisplay.textContent = '(deficit: -$' + Math.abs(gap).toFixed(2) + '/mo)';
+            gapDisplay.style.color = '#9B1C1C';
+          }
+        } else {
+          gapDisplay.textContent = '';
+        }
+      }
+
+      expenseFields.forEach(function(name) {
+        document.querySelector('[name="' + name + '"]').addEventListener('input', updateExpenseTotal);
+      });
+      // Also recalculate when income changes
+      ['total_monthly_income', 'monthly_net_income'].forEach(function(name) {
+        document.querySelector('[name="' + name + '"]').addEventListener('input', updateExpenseTotal);
+      });
+
+      // Live file size tracker
+      var fileSizeDisplay = document.getElementById('fileSizeIndicator');
+      function updateFileSize() {
+        var total = 0;
+        document.querySelectorAll('input[type="file"]').forEach(function(input) {
+          if (input.files) {
+            for (var i = 0; i < input.files.length; i++) {
+              total += input.files[i].size;
+            }
+          }
+        });
+        if (total > 0) {
+          var mb = (total / (1024 * 1024)).toFixed(1);
+          fileSizeDisplay.textContent = '(' + mb + 'MB used)';
+          fileSizeDisplay.style.color = total > 5 * 1024 * 1024 ? '#9B1C1C' : '#2E6B3A';
+        } else {
+          fileSizeDisplay.textContent = '';
+        }
+      }
+      document.querySelectorAll('input[type="file"]').forEach(function(input) {
+        input.addEventListener('change', updateFileSize);
+      });
+    });
+
+    /* ----------------------------------------------------------
+       SCORING FUNCTIONS (mirrors board-approved rubric)
+       ---------------------------------------------------------- */
+
+    // Category 1: Completeness & Documentation (0-5 pts)
+    function scoreCompleteness(form) {
+      const requiredFields = [
+        'full_name', 'date_of_birth', 'primary_phone', 'email',
+        'address', 'city', 'state', 'zip', 'employer',
+        'monthly_gross_income', 'monthly_net_income', 'total_monthly_income',
+        'amount_requested', 'funds_deadline', 'explanation', 'signature'
+      ];
+
+      let filledCount = 0;
+      requiredFields.forEach(function(name) {
+        const el = form.querySelector('[name="' + name + '"]');
+        if (el && el.value && el.value.trim() !== '') filledCount++;
+      });
+
+      // Check radio buttons
+      const services = form.querySelector('input[name="receives_services"]:checked');
+      const otherAssist = form.querySelector('input[name="other_assistance"]:checked');
+      if (services) filledCount++;
+      if (otherAssist) filledCount++;
+
+      const totalRequired = requiredFields.length + 2; // +2 for radios
+
+      // Check required file uploads
+      const requiredFiles = ['photo_id', 'proof_of_income', 'bill_statement'];
+      let filesUploaded = 0;
+      requiredFiles.forEach(function(name) {
+        const el = form.querySelector('input[name="' + name + '"]');
+        if (el && el.files && el.files.length > 0) filesUploaded++;
+      });
+
+      const fieldPct = filledCount / totalRequired;
+      const filePct = filesUploaded / requiredFiles.length;
+      const combined = (fieldPct * 0.6) + (filePct * 0.4); // weight both
+
+      if (combined >= 0.95) return { score: 5, detail: 'Fully complete (' + filledCount + '/' + totalRequired + ' fields, ' + filesUploaded + '/' + requiredFiles.length + ' docs)' };
+      if (combined >= 0.80) return { score: 4, detail: 'Mostly complete with minor gaps (' + filledCount + '/' + totalRequired + ' fields, ' + filesUploaded + '/' + requiredFiles.length + ' docs)' };
+      if (combined >= 0.65) return { score: 3, detail: 'Some gaps (' + filledCount + '/' + totalRequired + ' fields, ' + filesUploaded + '/' + requiredFiles.length + ' docs)' };
+      if (combined >= 0.45) return { score: 2, detail: 'Key items missing (' + filledCount + '/' + totalRequired + ' fields, ' + filesUploaded + '/' + requiredFiles.length + ' docs)' };
+      if (combined >= 0.25) return { score: 1, detail: 'Incomplete (' + filledCount + '/' + totalRequired + ' fields, ' + filesUploaded + '/' + requiredFiles.length + ' docs)' };
+      return { score: 0, detail: 'Missing major documents (' + filledCount + '/' + totalRequired + ' fields, ' + filesUploaded + '/' + requiredFiles.length + ' docs)' };
+    }
+
+    // Category 2: Financial Assessment (0-10 pts)
+    function scoreFinancial(form) {
+      const grossIncome = parseFloat(form.querySelector('[name="monthly_gross_income"]').value) || 0;
+      const netIncome = parseFloat(form.querySelector('[name="monthly_net_income"]').value) || 0;
+      const totalIncome = parseFloat(form.querySelector('[name="total_monthly_income"]').value) || 0;
+      const savings = parseFloat(form.querySelector('[name="liquid_savings"]').value) || 0;
+
+      const expRent = parseFloat(form.querySelector('[name="expense_rent"]').value) || 0;
+      const expUtil = parseFloat(form.querySelector('[name="expense_utilities"]').value) || 0;
+      const expFood = parseFloat(form.querySelector('[name="expense_food"]').value) || 0;
+      const expTransport = parseFloat(form.querySelector('[name="expense_transportation"]').value) || 0;
+      const expInsurance = parseFloat(form.querySelector('[name="expense_insurance"]').value) || 0;
+      const expChildcare = parseFloat(form.querySelector('[name="expense_childcare"]').value) || 0;
+      const expOther = parseFloat(form.querySelector('[name="expense_other"]').value) || 0;
+
+      const totalExpenses = expRent + expUtil + expFood + expTransport + expInsurance + expChildcare + expOther;
+      const incomeUsed = totalIncome > 0 ? totalIncome : netIncome;
+      const gap = incomeUsed - totalExpenses;
+      const gapPct = incomeUsed > 0 ? (gap / incomeUsed) * 100 : -100;
+      const requestAmt = parseFloat(form.querySelector('[name="amount_requested"]').value) || 0;
+      const savingsCoversRequest = savings >= requestAmt;
+
+      let score = 0;
+      let detail = '';
+
+      // Edge case: no financial data entered at all
+      if (incomeUsed === 0 && totalExpenses === 0) {
+        return {
+          score: 5,
+          detail: 'Insufficient financial data provided — cannot fully assess from numbers alone',
+          totalIncome: 0, totalExpenses: 0, monthlyGap: 0, savings: savings, requestAmount: requestAmt
+        };
+      }
+
+      if (gap > 0 && gapPct > 20 && savingsCoversRequest) {
+        score = 1;
+        detail = 'Income exceeds expenses by ' + gapPct.toFixed(0) + '%, savings cover request';
+      } else if (gap > 0 && gapPct > 10) {
+        score = 3;
+        detail = 'Income slightly exceeds expenses by ' + gapPct.toFixed(0) + '%';
+      } else if (gap > 0 && gapPct > 0) {
+        score = 5;
+        detail = 'Income barely exceeds expenses by ' + gapPct.toFixed(0) + '%';
+      } else if (gap >= -50 && gap <= 50) {
+        score = 7;
+        detail = 'Income roughly equal to expenses (gap: $' + Math.abs(gap).toFixed(2) + ')';
+      } else if (gap < 0 && gapPct >= -20) {
+        score = 8;
+        detail = 'Expenses exceed income by $' + Math.abs(gap).toFixed(2) + '/mo (' + Math.abs(gapPct).toFixed(0) + '%)';
+      } else if (gap < 0 && gapPct >= -40) {
+        score = 9;
+        detail = 'Expenses significantly exceed income by $' + Math.abs(gap).toFixed(2) + '/mo (' + Math.abs(gapPct).toFixed(0) + '%)';
+      } else {
+        score = 10;
+        detail = 'Severe deficit: expenses exceed income by $' + Math.abs(gap).toFixed(2) + '/mo';
+      }
+
+      // Savings modifier
+      if (savings <= 0 && score >= 5) score = Math.min(10, score + 1);
+      if (savingsCoversRequest && score >= 5) score = Math.max(3, score - 2);
+
+      score = Math.max(0, Math.min(10, score));
+
+      return {
+        score: score,
+        detail: detail,
+        totalIncome: incomeUsed,
+        totalExpenses: totalExpenses,
+        monthlyGap: gap,
+        savings: savings,
+        requestAmount: requestAmt
+      };
+    }
+
+    // Category 3: Crisis Severity & Urgency (0-5 pts)
+    function scoreCrisis(form) {
+      // Map assistance types to severity
+      const severityMap = {
+        'assist_rent': 5,
+        'assist_utilities': 4,
+        'assist_medical': 5,
+        'assist_food': 4,
+        'assist_transportation': 3,
+        'assist_home_repair': 3,
+        'assist_other': 2
+      };
+
+      let maxSeverity = 0;
+      let assistTypes = [];
+      Object.keys(severityMap).forEach(function(name) {
+        const el = form.querySelector('input[name="' + name + '"]');
+        if (el && el.checked) {
+          maxSeverity = Math.max(maxSeverity, severityMap[name]);
+          const label = name.replace('assist_', '').replace(/_/g, ' ');
+          assistTypes.push(label);
+        }
+      });
+
+      // Urgency based on deadline proximity
+      const deadlineStr = form.querySelector('[name="funds_deadline"]').value;
+      let daysUntil = 999;
+      let urgencyLabel = 'No deadline provided';
+      if (deadlineStr) {
+        const deadline = new Date(deadlineStr + 'T00:00:00');
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        daysUntil = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+        if (daysUntil < 0) urgencyLabel = 'PAST DUE (' + Math.abs(daysUntil) + ' days ago)';
+        else if (daysUntil <= 3) urgencyLabel = 'CRITICAL (' + daysUntil + ' days)';
+        else if (daysUntil <= 7) urgencyLabel = 'URGENT (' + daysUntil + ' days)';
+        else if (daysUntil <= 14) urgencyLabel = 'MODERATE (' + daysUntil + ' days)';
+        else urgencyLabel = 'STANDARD (' + daysUntil + ' days)';
+      }
+
+      // Urgency modifier
+      let urgencyBonus = 0;
+      if (daysUntil < 0) urgencyBonus = 2;
+      else if (daysUntil <= 3) urgencyBonus = 2;
+      else if (daysUntil <= 7) urgencyBonus = 1;
+
+      // Combine: base from severity type, boosted by urgency
+      let baseSeverity = Math.round(maxSeverity * 0.6); // scale 5 -> 3
+      let score = Math.min(5, baseSeverity + urgencyBonus);
+
+      if (assistTypes.length === 0) score = 0;
+
+      let detail = 'Type: ' + (assistTypes.length > 0 ? assistTypes.join(', ') : 'None selected');
+      detail += ' | Urgency: ' + urgencyLabel;
+
+      return { score: score, detail: detail, daysUntilDeadline: daysUntil, urgencyLabel: urgencyLabel };
+    }
+
+    // Category 4: Alternatives Explored (0-5 pts)
+    function scoreAlternatives(form) {
+      const soughtHelp = form.querySelector('input[name="other_assistance"]:checked');
+      const helpDetails = (form.querySelector('[name="other_assistance_details"]').value || '').trim();
+      const receivesServices = form.querySelector('input[name="receives_services"]:checked');
+      const servicesList = (form.querySelector('[name="services_list"]').value || '').trim();
+
+      let score = 0;
+      let detail = '';
+
+      if (!soughtHelp || soughtHelp.value === 'No') {
+        // Didn't seek other help
+        if (receivesServices && receivesServices.value === 'Yes' && servicesList.length > 0) {
+          score = 2;
+          detail = 'No other assistance sought, but receives services (' + servicesList + ')';
+        } else {
+          score = 1;
+          detail = 'No attempt to seek other help documented';
+        }
+      } else {
+        // Sought other help
+        if (helpDetails.length > 50) {
+          score = 5;
+          detail = 'Detailed alternatives documented: ' + helpDetails.substring(0, 80) + (helpDetails.length > 80 ? '...' : '');
+        } else if (helpDetails.length > 15) {
+          score = 4;
+          detail = 'Alternatives explored with some detail: ' + helpDetails;
+        } else if (helpDetails.length > 0) {
+          score = 3;
+          detail = 'Some alternatives noted: ' + helpDetails;
+        } else {
+          score = 2;
+          detail = 'Indicated yes to other assistance but no details provided';
+        }
+      }
+
+      return { score: score, detail: detail };
+    }
+
+    // Recommendation bracket (from rubric)
+    function getRecommendation(autoTotal, maxAutoPoints) {
+      // Extrapolate: if auto-scored X out of 25, estimate full 35-point range
+      // Categories 5-6 (10 pts) are unknown, so we project a range
+      const lowEstimate = autoTotal; // assume 0 on categories 5-6
+      const midEstimate = autoTotal + 5; // assume average on 5-6
+      const highEstimate = autoTotal + 10; // assume max on 5-6
+
+      let bracket = '';
+      let recommendation = '';
+
+      if (lowEstimate >= 20) {
+        bracket = 'LIKELY HIGH NEED (30-35 range possible)';
+        recommendation = 'Strong preliminary case. Even with conservative scoring on Past Assistance & Verification, likely qualifies for approval or partial approval.';
+      } else if (midEstimate >= 20 && midEstimate < 30) {
+        bracket = 'LIKELY MODERATE NEED (20-29 range)';
+        recommendation = 'Preliminary data supports moderate need. Final recommendation depends heavily on Past Assistance record and document verification (Categories 5-6).';
+      } else if (midEstimate >= 10) {
+        bracket = 'BORDERLINE (10-19 range possible)';
+        recommendation = 'Preliminary data shows limited need indicators. Reviewer should carefully evaluate crisis explanation and verify all documentation before scoring.';
+      } else {
+        bracket = 'LOW INDICATORS (below 10 likely)';
+        recommendation = 'Preliminary data does not strongly indicate need based on submitted information. Reviewer should confirm all data and check for extenuating circumstances not captured in form fields.';
+      }
+
+      return {
+        autoTotal: autoTotal,
+        maxAutoPoints: maxAutoPoints,
+        lowEstimate: lowEstimate,
+        midEstimate: midEstimate,
+        highEstimate: highEstimate,
+        bracket: bracket,
+        recommendation: recommendation
+      };
+    }
+
+    /* ----------------------------------------------------------
+       FORM SUBMISSION HANDLER
+       Calculates scores and injects as hidden fields before
+       FormSubmit.co processes the submission
+       ---------------------------------------------------------- */
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+
+      form.addEventListener('submit', function(e) {
+        // Validate at least one assistance type is checked
+        const assistChecks = ['assist_rent', 'assist_utilities', 'assist_medical',
+          'assist_food', 'assist_transportation', 'assist_home_repair', 'assist_other'];
+        const anyChecked = assistChecks.some(function(name) {
+          const el = form.querySelector('input[name="' + name + '"]');
+          return el && el.checked;
+        });
+        if (!anyChecked) {
+          e.preventDefault();
+          alert('Please select at least one Type of Assistance Requested in Section C.');
+          var firstCheckbox = form.querySelector('input[name="assist_rent"]');
+          if (firstCheckbox) firstCheckbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+
+        // Check total file size (FormSubmit.co limit ~5MB)
+        var totalFileSize = 0;
+        var fileInputs = form.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(function(input) {
+          if (input.files) {
+            for (var i = 0; i < input.files.length; i++) {
+              totalFileSize += input.files[i].size;
+            }
+          }
+        });
+        if (totalFileSize > 5 * 1024 * 1024) {
+          var sizeMB = (totalFileSize / (1024 * 1024)).toFixed(1);
+          e.preventDefault();
+          alert('Total file size is ' + sizeMB + 'MB, which exceeds the 5MB limit. Please reduce file sizes (use phone photos instead of scans, or compress PDFs) and try again.');
+          return;
+        }
+
+        // Remove any previously injected assessment fields
+        document.querySelectorAll('.auto-assessment-field').forEach(function(el) { el.remove(); });
+
+        // Run all scoring functions
+        const completeness = scoreCompleteness(form);
+        const financial = scoreFinancial(form);
+        const crisis = scoreCrisis(form);
+        const alternatives = scoreAlternatives(form);
+
+        const autoTotal = completeness.score + financial.score + crisis.score + alternatives.score;
+        const maxAutoPoints = 25;
+        const rec = getRecommendation(autoTotal, maxAutoPoints);
+
+        // Build the assessment summary text
+        const divider = '════════════════════════════════════════';
+        const subDivider = '────────────────────────────────────────';
+
+        let summary = '';
+        summary += divider + '\n';
+        summary += 'PRELIMINARY ASSESSMENT SUMMARY\n';
+        summary += 'Auto-generated from application data\n';
+        summary += 'REVIEWER MUST COMPLETE Categories 5 & 6\n';
+        summary += divider + '\n\n';
+
+        summary += 'SCORING OVERVIEW\n';
+        summary += subDivider + '\n';
+        summary += '1. Completeness & Documentation: ' + completeness.score + '/5\n';
+        summary += '   ' + completeness.detail + '\n\n';
+        summary += '2. Financial Assessment: ' + financial.score + '/10\n';
+        summary += '   ' + financial.detail + '\n';
+        summary += '   Monthly Income: $' + financial.totalIncome.toFixed(2) + '\n';
+        summary += '   Monthly Expenses: $' + financial.totalExpenses.toFixed(2) + '\n';
+        summary += '   Monthly Gap: $' + financial.monthlyGap.toFixed(2) + (financial.monthlyGap < 0 ? ' (DEFICIT)' : ' (surplus)') + '\n';
+        summary += '   Liquid Savings: $' + financial.savings.toFixed(2) + '\n';
+        summary += '   Amount Requested: $' + financial.requestAmount.toFixed(2) + '\n\n';
+        summary += '3. Crisis Severity & Urgency: ' + crisis.score + '/5\n';
+        summary += '   ' + crisis.detail + '\n\n';
+        summary += '4. Alternatives Explored: ' + alternatives.score + '/5\n';
+        summary += '   ' + alternatives.detail + '\n\n';
+        summary += '5. Past Assistance Record: ___/5\n';
+        summary += '   ** REVIEWER MUST SCORE — Check PFSA records for prior applications **\n\n';
+        summary += '6. Verification Confidence: ___/5\n';
+        summary += '   ** REVIEWER MUST SCORE — Review uploaded documents for accuracy **\n\n';
+
+        summary += subDivider + '\n';
+        summary += 'AUTO-SCORED SUBTOTAL: ' + autoTotal + '/' + maxAutoPoints + '\n';
+        summary += 'ESTIMATED FULL RANGE: ' + rec.lowEstimate + ' to ' + rec.highEstimate + ' out of 35\n';
+        summary += 'PRELIMINARY BRACKET: ' + rec.bracket + '\n\n';
+        summary += 'RECOMMENDATION NOTE:\n' + rec.recommendation + '\n\n';
+
+        summary += subDivider + '\n';
+        summary += 'SCORE BRACKETS (from board-approved rubric):\n';
+        summary += '30-35 = High Need — Recommend approval at or near requested amount\n';
+        summary += '20-29 = Moderate Need — Consider partial or conditional approval\n';
+        summary += '10-19 = Low Need — Likely deny unless mitigating circumstances\n';
+        summary += '0-9   = Very Low Need / High Risk — Do not approve\n';
+        summary += divider + '\n';
+
+        // Inject hidden fields into form before submission
+        function injectField(name, value) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value;
+          input.className = 'auto-assessment-field';
+          form.appendChild(input);
+        }
+
+        // Top-level assessment (FormSubmit _template=table will show these)
+        // IMPORTANT: Field names must NOT start with _ (FormSubmit treats those as config and drops them)
+        injectField('ASSESSMENT SUMMARY', summary);
+        injectField('SCORE 01 Completeness', completeness.score + '/5 — ' + completeness.detail);
+        injectField('SCORE 02 Financial Need', financial.score + '/10 — ' + financial.detail);
+        injectField('SCORE 02a Monthly Income', '$' + financial.totalIncome.toFixed(2));
+        injectField('SCORE 02b Monthly Expenses', '$' + financial.totalExpenses.toFixed(2));
+        injectField('SCORE 02c Monthly Gap', '$' + financial.monthlyGap.toFixed(2) + (financial.monthlyGap < 0 ? ' DEFICIT' : ' surplus'));
+        injectField('SCORE 02d Liquid Savings', '$' + financial.savings.toFixed(2));
+        injectField('SCORE 02e Request Amount', '$' + financial.requestAmount.toFixed(2));
+        injectField('SCORE 03 Crisis Severity', crisis.score + '/5 — ' + crisis.detail);
+        injectField('SCORE 03a Urgency Level', crisis.urgencyLabel);
+        injectField('SCORE 04 Alternatives Explored', alternatives.score + '/5 — ' + alternatives.detail);
+        injectField('SCORE AUTO SUBTOTAL', autoTotal + '/25 (Categories 1-4 only)');
+        injectField('SCORE ESTIMATED RANGE', rec.lowEstimate + ' to ' + rec.highEstimate + ' out of 35');
+        injectField('SCORE BRACKET', rec.bracket);
+        injectField('REVIEWER ACTION REQUIRED', 'Score Category 5 (Past Assistance: ___/5) and Category 6 (Verification: ___/5) then finalize total out of 35');
+
+        // Update email subject with applicant name and urgency
+        const applicantName = (form.querySelector('[name="full_name"]').value || 'Unknown').trim();
+        const subjectEl = document.getElementById('emailSubject');
+        subjectEl.value = 'Benevolence Application — ' + applicantName + ' — ' + rec.bracket;
+
+        // Let form submit normally to FormSubmit.co
+      });
+    });
+  </script>
+
+</body>
+</html>
