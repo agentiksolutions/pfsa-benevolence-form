@@ -402,14 +402,7 @@
       <p>Need help completing this form? Call <a href="tel:8593143051">(859) 314-3051</a>.</p>
     </div>
 
-    <form action="https://formsubmit.co/info@thepfsa.org" method="POST" enctype="multipart/form-data">
-      <!-- FormSubmit config -->
-      <input type="hidden" name="_subject" id="emailSubject" value="New Benevolence Application Received">
-      <input type="hidden" name="_next" value="https://apply.thepfsa.org/thank-you.html">
-      <input type="hidden" name="_captcha" value="true">
-      <input type="hidden" name="_template" value="table">
-      <input type="text" name="_honey" style="display:none">
-
+    <form id="benevolenceForm" enctype="multipart/form-data">
       <!-- SECTION A -->
       <div class="form-section">
         <h2>Section A <span>Applicant & Household Information</span></h2>
@@ -808,7 +801,7 @@
         </div>
 
         <div style="margin-top: 0.75rem; padding: 0.6rem 1rem; background: #FFF8E7; border-radius: 6px; border: 1px solid #F0DCA0; font-size: 0.82rem; color: #8B6914;">
-          Total uploads must be under 5MB. Use phone photos or compress PDFs if needed.
+          Accepted formats: images and PDFs. Large files may take a moment to upload.
           <span id="fileSizeIndicator" style="font-weight: 600; margin-left: 0.5rem;"></span>
         </div>
 
@@ -831,6 +824,12 @@
         </p>
       </div>
 
+      <div id="submitError" style="display:none; padding: 1rem 1.25rem; background: #FEF2F2; border: 1.5px solid #FECACA; border-radius: 8px; color: #991B1B; font-size: 0.9rem; margin-bottom: 1rem;"></div>
+      <div id="submitLoading" style="display:none; text-align: center; padding: 1.25rem; margin-bottom: 1rem;">
+        <div style="display:inline-block; width:20px; height:20px; border:3px solid #D1D5DB; border-top-color:#B8860B; border-radius:50%; animation:spin 0.8s linear infinite; margin-right:0.75rem; vertical-align:middle;"></div>
+        <span style="font-size:1rem; color:#555; vertical-align:middle;">Submitting your application...</span>
+      </div>
+      <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
       <button type="submit" class="submit-btn">Submit Application</button>
     </form>
   </div>
@@ -933,7 +932,7 @@
         if (total > 0) {
           var mb = (total / (1024 * 1024)).toFixed(1);
           fileSizeDisplay.textContent = '(' + mb + 'MB used)';
-          fileSizeDisplay.style.color = total > 5 * 1024 * 1024 ? '#9B1C1C' : '#2E6B3A';
+          fileSizeDisplay.style.color = '#555';
         } else {
           fileSizeDisplay.textContent = '';
         }
@@ -1199,13 +1198,18 @@
 
     /* ----------------------------------------------------------
        FORM SUBMISSION HANDLER
-       Calculates scores and injects as hidden fields before
-       FormSubmit.co processes the submission
+       Validates, then submits via fetch to /api/submit-application
+       Scoring is now handled server-side
        ---------------------------------------------------------- */
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.querySelector('form');
+      const submitBtn = form.querySelector('.submit-btn');
+      const errorDiv = document.getElementById('submitError');
+      const loadingDiv = document.getElementById('submitLoading');
 
       form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
         // Validate required file uploads
         var requiredFiles = [
           { name: 'photo_id', label: 'Photo ID' },
@@ -1220,8 +1224,7 @@
           }
         });
         if (missingFiles.length > 0) {
-          e.preventDefault();
-          alert('Please upload the following required documents:\n\n• ' + missingFiles.join('\n• '));
+          alert('Please upload the following required documents:\n\n\u2022 ' + missingFiles.join('\n\u2022 '));
           var firstMissing = form.querySelector('input[name="' + requiredFiles.find(function(f) { return missingFiles.includes(f.label); }).name + '"]');
           if (firstMissing) firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
           return;
@@ -1235,122 +1238,53 @@
           return el && el.checked;
         });
         if (!anyChecked) {
-          e.preventDefault();
           alert('Please select at least one Type of Assistance Requested in Section C.');
           var firstCheckbox = form.querySelector('input[name="assist_rent"]');
           if (firstCheckbox) firstCheckbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
           return;
         }
 
-        // Check total file size (FormSubmit.co limit ~5MB)
-        var totalFileSize = 0;
-        var fileInputs = form.querySelectorAll('input[type="file"]');
-        fileInputs.forEach(function(input) {
-          if (input.files) {
-            for (var i = 0; i < input.files.length; i++) {
-              totalFileSize += input.files[i].size;
-            }
+        // Show loading, hide errors, disable button
+        errorDiv.style.display = 'none';
+        loadingDiv.style.display = 'block';
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.6';
+        submitBtn.style.cursor = 'not-allowed';
+
+        // Submit via fetch
+        var formData = new FormData(form);
+
+        fetch('/api/submit-application', {
+          method: 'POST',
+          body: formData
+        })
+        .then(function(response) {
+          return response.json().then(function(data) {
+            return { ok: response.ok, data: data };
+          });
+        })
+        .then(function(result) {
+          loadingDiv.style.display = 'none';
+          if (result.ok && result.data.success) {
+            window.location.href = '/thank-you.html';
+          } else {
+            errorDiv.textContent = result.data.error || 'Something went wrong. Please try again.';
+            errorDiv.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
+        })
+        .catch(function(err) {
+          loadingDiv.style.display = 'none';
+          errorDiv.textContent = 'Network error. Please check your connection and try again.';
+          errorDiv.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = '1';
+          submitBtn.style.cursor = 'pointer';
+          errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
-        if (totalFileSize > 5 * 1024 * 1024) {
-          var sizeMB = (totalFileSize / (1024 * 1024)).toFixed(1);
-          e.preventDefault();
-          alert('Total file size is ' + sizeMB + 'MB, which exceeds the 5MB limit. Please reduce file sizes (use phone photos instead of scans, or compress PDFs) and try again.');
-          return;
-        }
-
-        // Remove any previously injected assessment fields
-        document.querySelectorAll('.auto-assessment-field').forEach(function(el) { el.remove(); });
-
-        // Run all scoring functions
-        const completeness = scoreCompleteness(form);
-        const financial = scoreFinancial(form);
-        const crisis = scoreCrisis(form);
-        const alternatives = scoreAlternatives(form);
-
-        const autoTotal = completeness.score + financial.score + crisis.score + alternatives.score;
-        const maxAutoPoints = 25;
-        const rec = getRecommendation(autoTotal, maxAutoPoints);
-
-        // Build the assessment summary text
-        const divider = '════════════════════════════════════════';
-        const subDivider = '────────────────────────────────────────';
-
-        let summary = '';
-        summary += divider + '\n';
-        summary += 'PRELIMINARY ASSESSMENT SUMMARY\n';
-        summary += 'Auto-generated from application data\n';
-        summary += 'REVIEWER MUST COMPLETE Categories 5 & 6\n';
-        summary += divider + '\n\n';
-
-        summary += 'SCORING OVERVIEW\n';
-        summary += subDivider + '\n';
-        summary += '1. Completeness & Documentation: ' + completeness.score + '/5\n';
-        summary += '   ' + completeness.detail + '\n\n';
-        summary += '2. Financial Assessment: ' + financial.score + '/10\n';
-        summary += '   ' + financial.detail + '\n';
-        summary += '   Monthly Income: $' + financial.totalIncome.toFixed(2) + '\n';
-        summary += '   Monthly Expenses: $' + financial.totalExpenses.toFixed(2) + '\n';
-        summary += '   Monthly Gap: $' + financial.monthlyGap.toFixed(2) + (financial.monthlyGap < 0 ? ' (DEFICIT)' : ' (surplus)') + '\n';
-        summary += '   Liquid Savings: $' + financial.savings.toFixed(2) + '\n';
-        summary += '   Amount Requested: $' + financial.requestAmount.toFixed(2) + '\n\n';
-        summary += '3. Crisis Severity & Urgency: ' + crisis.score + '/5\n';
-        summary += '   ' + crisis.detail + '\n\n';
-        summary += '4. Alternatives Explored: ' + alternatives.score + '/5\n';
-        summary += '   ' + alternatives.detail + '\n\n';
-        summary += '5. Past Assistance Record: ___/5\n';
-        summary += '   ** REVIEWER MUST SCORE — Check PFSA records for prior applications **\n\n';
-        summary += '6. Verification Confidence: ___/5\n';
-        summary += '   ** REVIEWER MUST SCORE — Review uploaded documents for accuracy **\n\n';
-
-        summary += subDivider + '\n';
-        summary += 'AUTO-SCORED SUBTOTAL: ' + autoTotal + '/' + maxAutoPoints + '\n';
-        summary += 'ESTIMATED FULL RANGE: ' + rec.lowEstimate + ' to ' + rec.highEstimate + ' out of 35\n';
-        summary += 'PRELIMINARY BRACKET: ' + rec.bracket + '\n\n';
-        summary += 'RECOMMENDATION NOTE:\n' + rec.recommendation + '\n\n';
-
-        summary += subDivider + '\n';
-        summary += 'SCORE BRACKETS (from board-approved rubric):\n';
-        summary += '30-35 = High Need — Recommend approval at or near requested amount\n';
-        summary += '20-29 = Moderate Need — Consider partial or conditional approval\n';
-        summary += '10-19 = Low Need — Likely deny unless mitigating circumstances\n';
-        summary += '0-9   = Very Low Need / High Risk — Do not approve\n';
-        summary += divider + '\n';
-
-        // Inject hidden fields into form before submission
-        function injectField(name, value) {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = name;
-          input.value = value;
-          input.className = 'auto-assessment-field';
-          form.appendChild(input);
-        }
-
-        // Top-level assessment (FormSubmit _template=table will show these)
-        // IMPORTANT: Field names must NOT start with _ (FormSubmit treats those as config and drops them)
-        injectField('ASSESSMENT SUMMARY', summary);
-        injectField('SCORE 01 Completeness', completeness.score + '/5 — ' + completeness.detail);
-        injectField('SCORE 02 Financial Need', financial.score + '/10 — ' + financial.detail);
-        injectField('SCORE 02a Monthly Income', '$' + financial.totalIncome.toFixed(2));
-        injectField('SCORE 02b Monthly Expenses', '$' + financial.totalExpenses.toFixed(2));
-        injectField('SCORE 02c Monthly Gap', '$' + financial.monthlyGap.toFixed(2) + (financial.monthlyGap < 0 ? ' DEFICIT' : ' surplus'));
-        injectField('SCORE 02d Liquid Savings', '$' + financial.savings.toFixed(2));
-        injectField('SCORE 02e Request Amount', '$' + financial.requestAmount.toFixed(2));
-        injectField('SCORE 03 Crisis Severity', crisis.score + '/5 — ' + crisis.detail);
-        injectField('SCORE 03a Urgency Level', crisis.urgencyLabel);
-        injectField('SCORE 04 Alternatives Explored', alternatives.score + '/5 — ' + alternatives.detail);
-        injectField('SCORE AUTO SUBTOTAL', autoTotal + '/25 (Categories 1-4 only)');
-        injectField('SCORE ESTIMATED RANGE', rec.lowEstimate + ' to ' + rec.highEstimate + ' out of 35');
-        injectField('SCORE BRACKET', rec.bracket);
-        injectField('REVIEWER ACTION REQUIRED', 'Score Category 5 (Past Assistance: ___/5) and Category 6 (Verification: ___/5) then finalize total out of 35');
-
-        // Update email subject with applicant name and urgency
-        const applicantName = (form.querySelector('[name="full_name"]').value || 'Unknown').trim();
-        const subjectEl = document.getElementById('emailSubject');
-        subjectEl.value = 'Benevolence Application — ' + applicantName + ' — ' + rec.bracket;
-
-        // Let form submit normally to FormSubmit.co
       });
     });
   </script>
