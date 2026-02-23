@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createClient } from '@supabase/supabase-js'
 import Busboy from 'busboy'
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 import { Readable } from 'stream'
 import crypto from 'crypto'
 
@@ -537,8 +537,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const supabaseUrl = process.env.SUPABASE_URL
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  const smtpUser = process.env.OUTLOOK_SMTP_USER
-  const smtpPass = process.env.OUTLOOK_SMTP_PASS
+  const resendApiKey = process.env.RESEND_API_KEY
 
   if (!supabaseUrl || !supabaseKey) {
     return res.status(500).json({ error: 'Supabase credentials not configured' })
@@ -716,24 +715,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'Failed to save application. Please try again.' })
   }
 
-  // 8. Send notification email
-  if (smtpUser && smtpPass) {
+  // 8. Send notification email via Resend
+  if (resendApiKey) {
     try {
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.office365.com',
-        port: 587,
-        secure: false,
-        auth: { user: smtpUser, pass: smtpPass },
-        tls: { ciphers: 'SSLv3', rejectUnauthorized: false },
-      })
-
+      const resend = new Resend(resendApiKey)
       const applicantName = (fields['full_name'] || 'Unknown').trim()
       const emailSubject = `Benevolence Application \u2014 ${applicantName} \u2014 ${rec.bracket}`
       const htmlBody = buildNotificationEmail(applicationId, fields, completeness, financial, crisis, alternatives, rec)
 
-      await transporter.sendMail({
-        from: '"The PFSA, Inc." <info@thepfsa.org>',
-        to: 'info@thepfsa.org',
+      await resend.emails.send({
+        from: 'The PFSA, Inc. <noreply@thepfsa.org>',
+        to: ['info@thepfsa.org'],
         subject: emailSubject,
         html: htmlBody,
       })
