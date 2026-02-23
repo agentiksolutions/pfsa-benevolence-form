@@ -723,12 +723,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const emailSubject = `Benevolence Application \u2014 ${applicantName} \u2014 ${rec.bracket}`
       const htmlBody = buildNotificationEmail(applicationId, fields, completeness, financial, crisis, alternatives, rec)
 
-      await resend.emails.send({
+      const { data, error } = await resend.emails.send({
         from: 'The PFSA, Inc. <noreply@thepfsa.org>',
         to: ['info@thepfsa.org'],
         subject: emailSubject,
         html: htmlBody,
       })
+
+      if (error) {
+        console.error('Resend email error:', JSON.stringify(error))
+      } else {
+        console.log('Notification email sent:', data?.id)
+      }
     } catch (emailErr) {
       // Log but don't fail the submission over email
       console.error('Notification email error:', emailErr)
