@@ -1206,6 +1206,27 @@
       const form = document.querySelector('form');
 
       form.addEventListener('submit', function(e) {
+        // Validate required file uploads
+        var requiredFiles = [
+          { name: 'photo_id', label: 'Photo ID' },
+          { name: 'proof_of_income', label: 'Proof of Income' },
+          { name: 'bill_statement', label: 'Rent/Mortgage Statement or Utility/Medical Bill' }
+        ];
+        var missingFiles = [];
+        requiredFiles.forEach(function(file) {
+          var el = form.querySelector('input[name="' + file.name + '"]');
+          if (!el || !el.files || el.files.length === 0) {
+            missingFiles.push(file.label);
+          }
+        });
+        if (missingFiles.length > 0) {
+          e.preventDefault();
+          alert('Please upload the following required documents:\n\n• ' + missingFiles.join('\n• '));
+          var firstMissing = form.querySelector('input[name="' + requiredFiles.find(function(f) { return missingFiles.includes(f.label); }).name + '"]');
+          if (firstMissing) firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+
         // Validate at least one assistance type is checked
         const assistChecks = ['assist_rent', 'assist_utilities', 'assist_medical',
           'assist_food', 'assist_transportation', 'assist_home_repair', 'assist_other'];
