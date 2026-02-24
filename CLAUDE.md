@@ -35,10 +35,10 @@ Categories 5-6 (Past Assistance + Verification Confidence) scored by human revie
 - RESEND_API_KEY
 
 ## Related Projects
-- app.thepfsa.org (donor tracker + benevolence reviewer module) — reads from same Supabase tables
+- app.thepfsa.org (PFSA Board Portal + benevolence reviewer module) — reads from same Supabase tables
 - www.thepfsa.org (public website — links to this form)
 
 ## Do NOT
 - Change the form's visual design without approval
 - Remove or modify the auto-scoring logic without checking the board-approved rubric
-- Touch Supabase table schema here — migrations live in pfsa-donor-tracker repo
+- Touch Supabase table schema here — migrations live in the pfsa-donor-tracker repo (PFSA Board Portal)
