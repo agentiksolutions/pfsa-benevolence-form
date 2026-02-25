@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$(git rev-parse --show-toplevel)\" && git add -A && git diff --cached --quiet || git commit -m \"session: auto-commit on session end\" && git push origin main 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
