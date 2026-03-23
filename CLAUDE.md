@@ -38,10 +38,8 @@ Categories 5-6 (Past Assistance + Verification Confidence) scored by human revie
 - app.thepfsa.org (PFSA Board Portal + benevolence reviewer module) — reads from same Supabase tables
 - www.thepfsa.org (public website — links to this form)
 
-## Do NOT
-- Change the form's visual design without approval
-- Remove or modify the auto-scoring logic without checking the board-approved rubric
-- Touch Supabase table schema here — migrations live in the pfsa-donor-tracker repo (PFSA Board Portal)
+## Rules
+See @.claude/rules/core-rules.md
 
 ## SESSION RULES (Two-Tier)
 
@@ -59,3 +57,5 @@ Categories 5-6 (Past Assistance + Verification Confidence) scored by human revie
 7. Git commit and push all affected repos
 
 **Rule:** Claude Code self-determines which tier applies. Default to Light unless the session touches multiple projects or changes system architecture.
+
+*Last updated: 2026-03-22 (restructured — rules extracted to .claude/rules/)*
