@@ -16,9 +16,13 @@ Public-facing form where individuals in financial hardship apply for emergency a
 - Resend API for email notifications (thepfsa.org domain verified — DKIM, SPF, MX green)
 
 ## Key Files
-- index.html — the application form (4 sections, file uploads, client-side validation)
-- api/submit-application.ts — serverless handler (multipart parsing, file upload to Supabase Storage, auto-scoring engine Categories 1-4, DB insert, Resend email notification)
+- index.html — the application form (4 sections, file uploads, client-side validation). On submit it (1) POSTs file metadata to `/api/create-upload-url`, (2) uploads each document **directly to Supabase Storage** via `uploadToSignedUrl` (pinned `supabase-js@2.95.3` UMD + SRI), then (3) POSTs the small JSON record to `/api/submit-application`.
+- api/create-upload-url.ts — serverless handler that mints per-file **signed upload URLs** (service role) after validating field/type/size/count. Returns `{ uploadId, bucket, uploads[] }`.
+- api/submit-application.ts — serverless handler. Accepts **JSON** (form fields + uploaded-file metadata), validates `uploadId` (UUID) + rejects storage paths outside `applications/<id>/`, runs auto-scoring Categories 1-4, DB insert, Resend email.
 - vercel.json — API rewrites
+
+## Upload architecture (why two endpoints — added 2026-06-24)
+Documents are NOT POSTed through the function. Vercel caps serverless **request bodies at ~4.5 MB**; three phone photos exceed that, so the old multipart submit returned **HTTP 413 before the function ran** (applicants saw an "error code"/"Network error"). Files now go browser → Supabase Storage directly via short-lived signed upload URLs minted server-side; the function only ever sees small JSON. Signed-upload tokens (and the service-role key) bypass Storage RLS, so the `benevolence-files` bucket stays locked to authenticated-read-only (see pfsa-donor-tracker migration 019).
 
 ## Auto-Scoring Engine
 Calculates Categories 1-4 of board-approved Scoring Rubric (25/35 pts) server-side on submission:
