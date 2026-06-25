@@ -1,27 +1,16 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createClient } from '@supabase/supabase-js'
-import Busboy from 'busboy'
 import { Resend } from 'resend'
-import { Readable } from 'stream'
-import crypto from 'crypto'
 
+// Files are uploaded directly to Supabase Storage from the browser via signed upload
+// URLs (see api/create-upload-url.ts). This endpoint now receives only a small JSON
+// payload (form fields + uploaded-file metadata), so it stays well under Vercel's
+// ~4.5 MB request-body limit that the old multipart upload was hitting (HTTP 413).
 export const config = {
-  api: {
-    bodyParser: false,
-  },
   maxDuration: 30,
 }
 
 // ─── Types ───────────────────────────────────────────────────────────
-
-interface FileUpload {
-  fieldName: string
-  fileName: string
-  storagePath: string
-  sizeBytes: number
-  contentType: string
-  buffer: Buffer
-}
 
 interface ScoreResult {
   score: number
@@ -39,57 +28,9 @@ interface RecommendationResult {
   recommendation: string
 }
 
-// ─── Multipart Parser ────────────────────────────────────────────────
-
-function parseMultipart(req: VercelRequest): Promise<{ fields: Record<string, string>; files: FileUpload[] }> {
-  return new Promise((resolve, reject) => {
-    const fields: Record<string, string> = {}
-    const files: FileUpload[] = []
-
-    const busboy = Busboy({
-      headers: req.headers as Record<string, string>,
-      limits: { fileSize: 50 * 1024 * 1024 }, // 50MB per file
-    })
-
-    busboy.on('field', (name: string, value: string) => {
-      fields[name] = value
-    })
-
-    busboy.on('file', (name: string, stream: NodeJS.ReadableStream, info: { filename: string; encoding: string; mimeType: string }) => {
-      const chunks: Buffer[] = []
-      stream.on('data', (chunk: Buffer) => chunks.push(chunk))
-      stream.on('end', () => {
-        if (info.filename && chunks.length > 0) {
-          const buffer = Buffer.concat(chunks)
-          files.push({
-            fieldName: name,
-            fileName: info.filename,
-            storagePath: '', // set later with application ID
-            sizeBytes: buffer.length,
-            contentType: info.mimeType,
-            buffer,
-          })
-        }
-      })
-    })
-
-    busboy.on('finish', () => resolve({ fields, files }))
-    busboy.on('error', reject)
-
-    // Vercel may pre-buffer the body even with bodyParser disabled
-    if ((req as any).readable === false || Buffer.isBuffer((req as any).body)) {
-      const body = (req as any).body
-      const readable = Readable.from(Buffer.isBuffer(body) ? body : Buffer.from(body))
-      readable.pipe(busboy)
-    } else {
-      req.pipe(busboy)
-    }
-  })
-}
-
 // ─── Scoring Functions (exact port from client-side) ─────────────────
 
-function scoreCompleteness(fields: Record<string, string>, files: FileUpload[]): ScoreResult {
+function scoreCompleteness(fields: Record<string, string>, files: Array<{ fieldName: string }>): ScoreResult {
   const requiredFields = [
     'full_name', 'date_of_birth', 'primary_phone', 'email',
     'address', 'city', 'state', 'zip', 'employer',
@@ -545,21 +486,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const supabase = createClient(supabaseUrl, supabaseKey)
 
-  // 1. Parse multipart form data
-  let fields: Record<string, string>
-  let files: FileUpload[]
+  // 1. Parse JSON body (form fields + already-uploaded file metadata)
+  let body: Record<string, unknown>
   try {
-    const parsed = await parseMultipart(req)
-    fields = parsed.fields
-    files = parsed.files
+    body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body as Record<string, unknown>)
+    if (!body || typeof body !== 'object') throw new Error('empty body')
   } catch (err) {
-    console.error('Multipart parse error:', err)
+    console.error('JSON parse error:', err)
     return res.status(400).json({ error: 'Failed to parse form data' })
   }
 
+  const uploadId = typeof body['uploadId'] === 'string' ? (body['uploadId'] as string) : ''
+  const rawUploadedFiles = Array.isArray(body['uploaded_files']) ? (body['uploaded_files'] as unknown[]) : []
+
+  // fields = everything except the two control keys, coerced to strings (matches the
+  // old busboy behavior where every form field arrived as a string).
+  const fields: Record<string, string> = {}
+  for (const [k, v] of Object.entries(body)) {
+    if (k === 'uploadId' || k === 'uploaded_files') continue
+    if (v === null || v === undefined) continue
+    fields[k] = typeof v === 'string' ? v : String(v)
+  }
+
   // 2. Validate required fields
-  const requiredFields = ['full_name', 'email', 'phone', 'primary_phone', 'address', 'city', 'state', 'zip']
-  const missing = requiredFields.filter(f => !fields[f] || !fields[f].trim())
   // Use primary_phone or phone (form uses primary_phone)
   if (!fields['primary_phone'] && fields['phone']) fields['primary_phone'] = fields['phone']
   if (!fields['phone'] && fields['primary_phone']) fields['phone'] = fields['primary_phone']
@@ -571,36 +520,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: `Missing required fields: ${actualMissing.join(', ')}` })
   }
 
-  // 3. Assemble household members
+  // 3. Validate the upload id (also used as the application/row id)
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uploadId)) {
+    return res.status(400).json({ error: 'Invalid or missing upload reference. Please re-attach your documents and resubmit.' })
+  }
+  const applicationId = uploadId
+
+  // 4. Assemble household members
   const householdMembers = assembleHouseholdMembers(fields)
 
-  // 4. Generate application UUID
-  const applicationId = crypto.randomUUID()
-
-  // 5. Upload files to Supabase Storage
+  // 5. Normalize uploaded-file metadata (files are already in Storage via signed upload URLs).
+  // Reconstruct/validate each storage_path against this upload id to prevent path injection —
+  // never trust a client-supplied path that points outside applications/<uploadId>/.
+  const pathPrefix = `applications/${applicationId}/`
   const uploadedFiles: Array<{ field_name: string; file_name: string; storage_path: string; size_bytes: number; content_type: string }> = []
-  for (const file of files) {
-    const storagePath = `applications/${applicationId}/${file.fieldName}/${file.fileName}`
-    const { error: uploadError } = await supabase.storage
-      .from('benevolence-files')
-      .upload(storagePath, file.buffer, {
-        contentType: file.contentType,
-        upsert: false,
-      })
-
-    if (uploadError) {
-      console.error(`File upload error (${file.fileName}):`, uploadError)
-      // Continue with other files rather than failing entirely
-    } else {
-      uploadedFiles.push({
-        field_name: file.fieldName,
-        file_name: file.fileName,
-        storage_path: storagePath,
-        size_bytes: file.sizeBytes,
-        content_type: file.contentType,
-      })
+  for (const item of rawUploadedFiles) {
+    if (!item || typeof item !== 'object') continue
+    const f = item as Record<string, unknown>
+    const storagePath = typeof f['storage_path'] === 'string' ? (f['storage_path'] as string) : ''
+    if (!storagePath.startsWith(pathPrefix)) {
+      console.warn('Rejected uploaded-file path outside this application:', storagePath)
+      continue
     }
+    uploadedFiles.push({
+      field_name: typeof f['field_name'] === 'string' ? (f['field_name'] as string) : '',
+      file_name: typeof f['file_name'] === 'string' ? (f['file_name'] as string) : '',
+      storage_path: storagePath,
+      size_bytes: typeof f['size_bytes'] === 'number' ? (f['size_bytes'] as number) : 0,
+      content_type: typeof f['content_type'] === 'string' ? (f['content_type'] as string) : '',
+    })
   }
+  const files = uploadedFiles.map(f => ({ fieldName: f.field_name }))
 
   // 6. Run server-side scoring
   const completeness = scoreCompleteness(fields, files)

@@ -840,6 +840,13 @@
     <p style="margin-top: 0.5rem;">501(c)(3) Nonprofit Organization &nbsp;&middot;&nbsp; EIN 20-3856434</p>
   </footer>
 
+  <!-- Supabase JS (pinned + SRI): used only to upload documents directly to Storage via
+       server-minted signed upload URLs, bypassing Vercel's ~4.5MB request-body limit. -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.3/dist/umd/supabase.min.js"
+    integrity="sha384-aRAaCbKYByQpx0fjPuC0PQ9P9moWMEsHXP9tyzP7tbyD5fPK6oTp+THsxdWiq02L"
+    crossorigin="anonymous"></script>
+
   <script>
     /* ============================================================
        PFSA BENEVOLENCE AUTO-ASSESSMENT ENGINE
@@ -1207,6 +1214,15 @@
       const errorDiv = document.getElementById('submitError');
       const loadingDiv = document.getElementById('submitLoading');
 
+      // Supabase client — used ONLY to upload documents directly to Storage via the
+      // signed upload URLs minted by /api/create-upload-url. The publishable key is
+      // public by design and grants no access to the private bucket on its own.
+      var SUPABASE_URL = 'https://hzuwudjbptrnmfkugqsr.supabase.co';
+      var SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_9aCe2qi-Px2FVqDTv70mfA_8PrVeExz';
+      var sbClient = (window.supabase && typeof window.supabase.createClient === 'function')
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+        : null;
+
       form.addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -1251,40 +1267,108 @@
         submitBtn.style.opacity = '0.6';
         submitBtn.style.cursor = 'not-allowed';
 
-        // Submit via fetch
-        var formData = new FormData(form);
-
-        fetch('/api/submit-application', {
-          method: 'POST',
-          body: formData
-        })
-        .then(function(response) {
-          return response.json().then(function(data) {
-            return { ok: response.ok, data: data };
-          });
-        })
-        .then(function(result) {
+        function resetButton() {
           loadingDiv.style.display = 'none';
-          if (result.ok && result.data.success) {
-            window.location.href = '/thank-you.html';
-          } else {
-            errorDiv.textContent = result.data.error || 'Something went wrong. Please try again.';
-            errorDiv.style.display = 'block';
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
-            submitBtn.style.cursor = 'pointer';
-            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        })
-        .catch(function(err) {
-          loadingDiv.style.display = 'none';
-          errorDiv.textContent = 'Network error. Please check your connection and try again.';
-          errorDiv.style.display = 'block';
           submitBtn.disabled = false;
           submitBtn.style.opacity = '1';
           submitBtn.style.cursor = 'pointer';
+        }
+        function showError(msg) {
+          resetButton();
+          errorDiv.textContent = msg || 'Something went wrong. Please try again.';
+          errorDiv.style.display = 'block';
           errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        });
+        }
+
+        if (!sbClient) {
+          showError('The upload service did not load. Please refresh the page and try again.');
+          return;
+        }
+
+        // Two-step submit: upload documents straight to Storage (no 4.5MB function limit),
+        // then send the application record as small JSON.
+        (async function () {
+          try {
+            var formData = new FormData(form);
+
+            // 1. Collect the chosen files, in field order.
+            var fileFields = ['photo_id', 'proof_of_income', 'bill_statement', 'bank_statements', 'other_documents'];
+            var filesToUpload = []; // { field, file }
+            fileFields.forEach(function (name) {
+              var el = form.querySelector('input[name="' + name + '"]');
+              if (el && el.files) {
+                for (var i = 0; i < el.files.length; i++) {
+                  filesToUpload.push({ field: name, file: el.files[i] });
+                }
+              }
+            });
+
+            // Build the JSON field payload (skip File entries; last value wins, matching the server).
+            var fieldPayload = {};
+            formData.forEach(function (value, key) {
+              if (value instanceof File) return;
+              fieldPayload[key] = value;
+            });
+
+            // 2. Ask the server for signed upload URLs (tiny JSON request).
+            var urlResp = await fetch('/api/create-upload-url', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                files: filesToUpload.map(function (f) {
+                  return { field: f.field, filename: f.file.name, contentType: f.file.type, size: f.file.size };
+                })
+              })
+            });
+            var urlData = await urlResp.json().catch(function () { return {}; });
+            if (!urlResp.ok || !urlData.uploadId || !Array.isArray(urlData.uploads)) {
+              showError(urlData.error || 'Could not start the document upload. Please try again.');
+              return;
+            }
+
+            // 3. Upload each file directly to Supabase Storage via its signed URL.
+            //    uploads come back in the same order they were sent.
+            for (var j = 0; j < urlData.uploads.length; j++) {
+              var u = urlData.uploads[j];
+              var match = filesToUpload[j];
+              var fileObj = match ? match.file : null;
+              if (!fileObj) { showError('Upload mismatch. Please refresh and try again.'); return; }
+              var up = await sbClient.storage.from(urlData.bucket).uploadToSignedUrl(u.storagePath, u.token, fileObj, {
+                contentType: u.contentType || fileObj.type || 'application/octet-stream'
+              });
+              if (up.error) {
+                showError('A document failed to upload (' + (fileObj.name || 'file') + '). Please check the file and try again.');
+                return;
+              }
+            }
+
+            // 4. Submit the application record (JSON: fields + uploaded-file metadata).
+            fieldPayload.uploadId = urlData.uploadId;
+            fieldPayload.uploaded_files = urlData.uploads.map(function (u) {
+              return {
+                field_name: u.field,
+                file_name: u.filename,
+                storage_path: u.storagePath,
+                size_bytes: u.size || 0,
+                content_type: u.contentType || ''
+              };
+            });
+
+            var subResp = await fetch('/api/submit-application', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(fieldPayload)
+            });
+            var subData = await subResp.json().catch(function () { return {}; });
+            if (subResp.ok && subData.success) {
+              window.location.href = '/thank-you.html';
+            } else {
+              showError(subData.error);
+            }
+          } catch (err) {
+            showError('Network error. Please check your connection and try again.');
+          }
+        })();
       });
     });
   </script>
