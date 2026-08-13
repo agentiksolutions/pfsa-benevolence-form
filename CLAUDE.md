@@ -43,7 +43,12 @@ Categories 5-6 (Past Assistance + Verification Confidence) scored by human revie
 - www.thepfsa.org (public website — links to this form)
 
 ## Rules
-See @.claude/rules/core-rules.md
+See `.claude/rules/benevolence-form-constraints.md`.
+
+## Keep out
+Applicants submit financial hardship details and contact information — treat every submission as
+PII. PFSA is a **separate Graph tenant** from BRG; a BRG credential will not work here. Never
+paste an applicant's details into any external channel.
 
 ## Session Rules
 Two-tier session protocol (Light vs Heavy) lives in the global CLAUDE.md at `~/.claude/CLAUDE.md`. Running Doc for this project: `E:/Cortex/philip-brain/PFSA/PFSA - Running Doc.md`.
