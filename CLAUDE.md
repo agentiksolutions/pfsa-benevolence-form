@@ -54,3 +54,5 @@ paste an applicant's details into any external channel.
 Two-tier session protocol (Light vs Heavy) lives in the global CLAUDE.md at `~/.claude/CLAUDE.md`. Running Doc for this project: `E:/Cortex/philip-brain/PFSA/PFSA - Running Doc.md`.
 
 *Last updated: 2026-03-22 (restructured — rules extracted to .claude/rules/)*
+
+Before working in a folder, read its README.md.
