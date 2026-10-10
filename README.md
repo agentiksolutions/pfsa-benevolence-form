@@ -15,16 +15,18 @@ Claude Code loads, including the upload design and the scoring rules.
 index.html        the application form
 thank-you.html    the page shown after a successful submission (linked from index.html)
 api/              Vercel serverless functions
-docs/             internal working documents (empty so far)
-scripts/          command-line tools (empty so far)
-config/           non-secret configuration (empty so far)
+docs/             internal working documents (empty so far, see its README)
+scripts/          command-line tools (empty so far, see its README)
+config/           non-secret configuration (empty so far, see its README)
 .claude/          Claude Code settings and project rules
 ```
 
 ## Folder contracts
 
-This project has no build step, so Vercel serves the repository root as the website. A README
-inside a folder could be served publicly, so each folder's contract lives here instead.
+This project has no build step, so Vercel serves the repository root as the website.
+`.vercelignore` keeps every `.md` file and the `docs/`, `scripts/`, `config/`, `.claude/` and
+`_archive/` folders off apply.thepfsa.org. `docs/`, `scripts/` and `config/` each have their own
+README. The contracts for `api/` and `.claude/` are below.
 
 ### api/
 
@@ -35,26 +37,6 @@ inside a folder could be served publicly, so each folder's contract lives here i
   calls both.
 - **What stays out:** keys and secrets, which are Vercel environment variables. Front-end code
   stays in the HTML pages.
-
-### docs/
-
-- **What goes in:** specs, designs and notes about the form. Empty so far.
-- **What comes out:** read by people and Claude sessions. Vercel serves this folder too, so
-  nothing private belongs here.
-- **What stays out:** applicant data of any kind, which is personal information.
-
-### scripts/
-
-- **What goes in:** command-line tools that support the form. Empty so far.
-- **What comes out:** run by hand. No scheduled task or deploy reads it.
-- **What stays out:** serverless functions (`api/`) and secrets.
-
-### config/
-
-- **What goes in:** configuration that is safe to commit. Empty so far.
-- **What comes out:** nothing reads it yet.
-- **What stays out:** secrets, which are Vercel environment variables, and `vercel.json`,
-  which Vercel reads from the root.
 
 ### .claude/
 
