@@ -2,7 +2,6 @@
 # api/, vercel.json, package.json and tsconfig.json (the api functions are TypeScript).
 *.md
 .claude/
-.cursorrules
 docs/
 config/
 scripts/

@@ -55,7 +55,6 @@ session and every `.md` in `agents/` is parsed as an agent, so neither gets a RE
   it from the project root to restore context after a compaction. It must not move.
 - `DECISION-LOG.md`: the old decision record. New decisions would go in `decisions/`. It
   stays at the root until Phil decides whether to convert it.
-- `.cursorrules`: settings for the Cursor editor. Whether to retire it is Phil's call.
 - `.git.corrupt-backup-2026-06-10/`: a local copy of the git folder from the June 2026
   repository corruption. It is gitignored and exists only on this machine. Deleting it is
   Phil's call.
