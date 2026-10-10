@@ -1,5 +1,7 @@
 # PFSA Benevolence Application
 
+This is PFSA's public online form where people in financial hardship apply for emergency benevolence assistance.
+
 ## What This Is
 Online benevolence assistance application for PFSA (501(c)(3), EIN 20-3856434).
 Public-facing form where individuals in financial hardship apply for emergency assistance.
@@ -12,16 +14,16 @@ Public-facing form where individuals in financial hardship apply for emergency a
 ## Stack
 - Static HTML/CSS/JS (form UI)
 - Vercel serverless function (api/submit-application)
-- Supabase (hzuwudjbptrnmfkugqsr) — benevolence_applications table + benevolence-files storage bucket
-- Resend API for email notifications (thepfsa.org domain verified — DKIM, SPF, MX green)
+- Supabase (hzuwudjbptrnmfkugqsr): benevolence_applications table + benevolence-files storage bucket
+- Resend API for email notifications (thepfsa.org domain verified: DKIM, SPF, MX green)
 
 ## Key Files
-- index.html — the application form (4 sections, file uploads, client-side validation). On submit it (1) POSTs file metadata to `/api/create-upload-url`, (2) uploads each document **directly to Supabase Storage** via `uploadToSignedUrl` (pinned `supabase-js@2.95.3` UMD + SRI), then (3) POSTs the small JSON record to `/api/submit-application`.
-- api/create-upload-url.ts — serverless handler that mints per-file **signed upload URLs** (service role) after validating field/type/size/count. Returns `{ uploadId, bucket, uploads[] }`.
-- api/submit-application.ts — serverless handler. Accepts **JSON** (form fields + uploaded-file metadata), validates `uploadId` (UUID) + rejects storage paths outside `applications/<id>/`, runs auto-scoring Categories 1-4, DB insert, Resend email.
-- vercel.json — API rewrites
+- index.html: the application form (4 sections, file uploads, client-side validation). On submit it (1) POSTs file metadata to `/api/create-upload-url`, (2) uploads each document **directly to Supabase Storage** via `uploadToSignedUrl` (pinned `supabase-js@2.95.3` UMD + SRI), then (3) POSTs the small JSON record to `/api/submit-application`.
+- api/create-upload-url.ts: serverless handler that mints per-file **signed upload URLs** (service role) after validating field/type/size/count. Returns `{ uploadId, bucket, uploads[] }`.
+- api/submit-application.ts: serverless handler. Accepts **JSON** (form fields + uploaded-file metadata), validates `uploadId` (UUID) + rejects storage paths outside `applications/<id>/`, runs auto-scoring Categories 1-4, DB insert, Resend email.
+- vercel.json: API rewrites
 
-## Upload architecture (why two endpoints — added 2026-06-24)
+## Upload architecture (why two endpoints, added 2026-06-24)
 Documents are NOT POSTed through the function. Vercel caps serverless **request bodies at ~4.5 MB**; three phone photos exceed that, so the old multipart submit returned **HTTP 413 before the function ran** (applicants saw an "error code"/"Network error"). Files now go browser → Supabase Storage directly via short-lived signed upload URLs minted server-side; the function only ever sees small JSON. Signed-upload tokens (and the service-role key) bypass Storage RLS, so the `benevolence-files` bucket stays locked to authenticated-read-only (see pfsa-donor-tracker migration 019).
 
 ## Auto-Scoring Engine
@@ -39,20 +41,20 @@ Categories 5-6 (Past Assistance + Verification Confidence) scored by human revie
 - RESEND_API_KEY
 
 ## Related Projects
-- app.thepfsa.org (PFSA Board Portal + benevolence reviewer module) — reads from same Supabase tables
-- www.thepfsa.org (public website — links to this form)
+- app.thepfsa.org (PFSA Board Portal + benevolence reviewer module): reads from same Supabase tables
+- www.thepfsa.org (public website, links to this form)
 
 ## Rules
 See `.claude/rules/benevolence-form-constraints.md`.
 
 ## Keep out
-Applicants submit financial hardship details and contact information — treat every submission as
+Applicants submit financial hardship details and contact information. Treat every submission as
 PII. PFSA is a **separate Graph tenant** from BRG; a BRG credential will not work here. Never
 paste an applicant's details into any external channel.
 
 ## Session Rules
 Two-tier session protocol (Light vs Heavy) lives in the global CLAUDE.md at `~/.claude/CLAUDE.md`. Running Doc for this project: `E:/Cortex/philip-brain/PFSA/PFSA - Running Doc.md`.
 
-*Last updated: 2026-03-22 (restructured — rules extracted to .claude/rules/)*
+*Last updated: 2026-03-22 (restructured: rules extracted to .claude/rules/)*
 
 Before working in a folder, read its README.md.
