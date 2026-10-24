@@ -11,5 +11,14 @@
     "@types/busboy": "^1.5.4",
     "@vercel/node": "^5.10.2",
     "typescript": "~5.9.3"
+  },
+  "overrides": {
+    "@vercel/node": {
+      "undici": "^6.29.1",
+      "path-to-regexp": "6.3.0"
+    },
+    "@vercel/static-config": {
+      "ajv": "^8.20.0"
+    }
   }
 }
